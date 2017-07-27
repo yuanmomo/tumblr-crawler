@@ -114,12 +114,19 @@ class CrawlerDownloader(Thread):
         self.id = id
         self.queue = queue
         self.proxies = proxies
+        self._register_regex_match_rules()
 
     def run(self):
         while True:
             mediaType, post, targetDirectory = self.queue.get()
             self.download(mediaType, post, targetDirectory)
             self.queue.task_done()
+
+    # can register differnet regex match rules
+    def _register_regex_match_rules(self):
+        # will iterate all the rules
+        # the first matched result will be returned
+        self.regex_rules = [video_hd_match(), video_default_match()]
 
     def download(self, mediaType, post, targetDirectory):
         try:
@@ -218,7 +225,7 @@ class Crawler(object):
     def fetchLinksForSite(self, site):
         """"""
         self.fetchVideoLinks(site)
-        self.fetchPhotoLinks(site)
+        # self.fetchPhotoLinks(site)
 
     def fetchVideoLinks(self, site):
         self._fetchLinks(site, "video")
